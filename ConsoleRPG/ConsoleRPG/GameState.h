@@ -1,21 +1,189 @@
 #pragma once
+#include "GameState.h"
+#include <iostream>
+#include <random>
+#include <string>
 
 enum STATE {INIT, MAIN, PLAY, GAME, EXIT};
-
-//STATE mainMenu();
-
-void splash();
-
-void endProgram();
-
-int getNumValid(int min, int max);
+enum WEAPON { FISTS, STICK, DAGGER, SHORTSWORD, GREATAXE };
 
 STATE currentLevel = INIT;
 
-class GameState
+std::string displayWeapon();
+int getNumValid(int min, int max);
+
+void splash();
+void play();
+
+#pragma region Stats
+class playerStats
 {
-	
-public:
-	void play();
-	STATE update();
+	public:
+		int hp = 100;
+		int minHp = 0;
+		int maxHp = 100;
+
+		int level = 1;
+
+		int currentExp = 0;
+		int maxExp = level * 100;
+
+		int def = 1;
+		int atk = 1;
+		
+		WEAPON pWeapon = STICK;
 };
+
+class mStats
+{
+	public:
+		int hp = 20;
+		int maxhp = 20;
+		int atk = 5;
+
+		int exp = 5;
+};
+#pragma endregion Player and Monster Stats
+
+#pragma region Level Up
+bool checkExp(int exp, int maxexp)
+{
+	if (exp >= maxexp)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+void levelUp()
+{
+	playerStats pStats;
+
+	char cChoice;
+	bool validInput = false;
+
+	pStats.level++;
+	pStats.currentExp = 0;
+	pStats.maxExp = pStats.level * 100;
+
+	std::cout << "Health = " << pStats.hp << std::endl;
+	std::cout << "Attack = " << pStats.atk << std::endl;
+	std::cout << "Deffense = " << pStats.def << std::endl;
+	system("pause");
+	system("cls");
+	std::cout << "YOU HAVE LEVELED UP!" << std::endl;
+	std::cout << "Would you like to:" << std::endl;
+	std::cout << "\tIncrease [A]ttack" << std::endl;
+	std::cout << "\tIncrease [H]ealth" << std::endl;
+	std::cout << "\tIncrease [D]efense" << std::endl;
+	std::cin >> cChoice;
+	while (validInput == false)
+	{
+		switch (cChoice)
+		{
+		case 'a':
+		case 'A':
+			pStats.atk += 2;
+			validInput = true;
+			pStats.hp = pStats.maxHp;
+			break;
+		case 'd':
+		case 'D':
+			pStats.def += 2;
+			validInput = true;
+			pStats.hp = pStats.maxHp;
+			break;
+		case 'h':
+		case 'H':
+			pStats.maxHp += 10;
+			validInput = true;
+			pStats.hp = pStats.maxHp;
+			break;
+		default:
+			validInput = false;
+			break;
+		}
+	}
+
+}
+#pragma endregion Where the leveling info is kept
+
+#pragma region Numerical Functions
+int RNG(int min, int max)
+{
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution(min, max);
+	int dice_roll = distribution(generator);
+
+	return dice_roll;
+}
+
+int getNumValid(int min, int max)
+{
+	int select;
+
+	do
+	{
+		std::cout << "Enter a valid Number (" << min << "-" << max << ")" << std::endl;
+		std::cin >> select;
+
+		if (std::cin.fail() || select < min || select > max)
+		{
+			std::cin.clear();
+			std::cin.ignore(80, '\n');
+			std::cout << "Invalid entry." << std::endl;
+		}
+		else break;
+	} while (true);
+
+	return select;
+}
+#pragma endregion Functions that return number values
+
+#pragma region Display Functions
+void displayStats()
+{
+	playerStats pStats;
+	std::cout << "+-----------------------+"                            << std::endl;
+	std::cout << "|\tHP: " << pStats.hp << "/" << pStats.maxHp << "\t|" << std::endl;
+	std::cout << "|\tATK: " << pStats.atk << "\t\t|"                    << std::endl;
+	std::cout << "|\tWeapon: " << displayWeapon() << "\t|"              << std::endl;
+	std::cout << "+-----------------------+"                            << std::endl;
+}
+
+std::string displayWeapon()
+{
+	playerStats pStats;
+	std::string wString;
+
+	switch (pStats.pWeapon)
+	{
+	case 0:
+		wString = "Fists";
+		return wString;
+		break;
+	case 1:
+		wString = "Stick";
+		return wString;
+		break;
+	case 2:
+		wString = "Dagger";
+		return wString;
+		break;
+	case 3:
+		wString = "Shortsword";
+		return wString;
+		break;
+	case 4:
+		wString = "Greataxe";
+		return wString;
+		break;
+	default:
+		break;
+	}
+}
+#pragma endregion They make shit show up on screen

@@ -1,64 +1,21 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
+
 #include "GameState.h"
 
-class playerStats
-{
-	public:
-		int hp = 100;
-		int minHp = 0;
-		int maxHp = 100;
-		int level = 1;
-		int atk = 1;
-		int def = 1;
-};
-
 STATE mainMenu();
-
-void levelUp()
-{
-	std::cout << "Health = " << pStats.hp << std::endl;
-	std::cout << "Attack = " << pStats.atk << std::endl;
-	std::cout << "Deffense = " << pStats.def << std::endl;
-	system("pause");
-	system("cls");
-	std::cout << "YOU HAVE LEVELED UP!" << std::endl;
-	std::cout << "Would you like to:" << std::endl;
-	std::cout << "\tIncrease [A]ttack" << std::endl;
-	std::cout << "\tIncrease [H]ealth" << std::endl;
-	std::cout << "\tIncrease [D]efense" << std::endl;
-	std::cin >> cChoice;
-
-	switch (cChoice)
-	{
-	case 'a':
-	case 'A':
-		pStats.atk += 2;
-		pStats.hp = pStats.maxHp;
-		break;
-	case 'd':
-	case 'D':
-		pStats.def += 2;
-		pStats.hp = pStats.maxHp;
-		break;
-	case 'h':
-	case 'H':
-		pStats.maxHp += 10;
-		pStats.hp = pStats.maxHp;
-		break;
-	case 'e':
-	case 'E':
-		isTesting = false;
-	default:
-		break;
-	}
-	
-}
-
+/*
+#===================+
+|					|
+|	MAIN FUNCTION	|
+|					|
+#===================+
+*/
 int main()
 {
-	levelUp();
-	/*currentLevel = INIT;*/
+	system("pause");
 	bool bPlaying = true;
 	while (bPlaying)
 	{
@@ -71,7 +28,7 @@ int main()
 			mainMenu();
 			break;
 		case PLAY:
-			&GameState::play;
+			play();
 			break;
 		default:
 			bPlaying = false;
@@ -97,8 +54,8 @@ STATE mainMenu()
 	{
 	case 1:
 		
-		/*currentLevel = PLAY;
-		return currentLevel;*/
+		currentLevel = PLAY;
+		return currentLevel;
 	case 2: 
 		currentLevel = INIT;
 		return currentLevel;
@@ -110,46 +67,92 @@ STATE mainMenu()
 	}
 }
 
+void Adventure()
+{
+	srand(std::time(0));
+
+	playerStats pStats;
+	mStats mstats;
+
+	int RNG = std::rand();
+	bool isExploring = true;
+	char cInput;
+
+	system("cls");
+	std::cout << "You take the trail out of town and into the forest..." << std::endl;
+	while (isExploring)
+	{
+		std::cout << "You are attacked by a bandit!" << std::endl;
+		displayStats();
+		std::cout << "What will you do?\n\t[F]ight\n\t[R]eturn to town\n\t[H]eal" << std::endl;
+		std::cin >> cInput;
+		switch (cInput)
+		{
+		case 'F':
+		case 'f':
+			pStats.hp -= mstats.atk;
+			displayStats();
+			break;
+		case 'R':
+		case 'r':
+			isExploring = false;
+			break;
+		case 'H':
+		case 'h':
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 void splash()
 {
 
 	system("cls");
-	std::cout << "entered the splash screen!" << std::endl;
-	std::cout << "Please press enter to begin" << std::endl;
+	std::cout << "\n\n\t#####  #   #  #####       ###    #    #  #####   ###   #####" << std::endl;
+	std::cout << "\t  #    #   #  #          #   #   #    #  #      #        #  " << std::endl;
+	std::cout << "\t  #    #####  ###       #   # #  #    #  ###     ###     #  " << std::endl;
+	std::cout << "\t  #    #   #  #          #   #    #  #   #          #    #  " << std::endl;
+	std::cout << "\t  #    #   #  #####       ### #    ##    #####   ###     #  " << std::endl;
+	std::cout << "\n\n\n\n\t\t\t";
 	system("pause");
 	currentLevel = MAIN;
 	system("cls");
 	mainMenu();
 }
 
-void GameState::play()
+void play()
 {
-	std::cout << "Entered Play Gamestate!";
-}
-
-STATE GameState::update()
-{
-	static STATE currentLevel;
-	return currentLevel;
-}
-
-int getNumValid(int min, int max)
-{
-	int select;
-
-	do
+	char cInput;
+	bool invalidEntry = true;
+	system("cls");
+	std::cout << "Entered play gamestate!" << std::endl;
+	std::cout << "Would you like to..." << std::endl;
+	std::cout << "\t[A]dventure" << std::endl;
+	std::cout << "\t[S]hop" << std::endl;
+	std::cout << "\t[E]xit" << std::endl;
+	std::cin >> cInput;
+	while (invalidEntry)
 	{
-		std::cout << "Enter a valid Number (" << min << "-" << max << ")" << std::endl;
-		std::cin >> select;
-
-		if (std::cin.fail() || select < min || select > max)
+		switch (cInput)
 		{
-			std::cin.clear();
-			std::cin.ignore(80, '\n');
-			std::cout << "Invalid entry." << std::endl;
+		case 'a':
+		case 'A':
+			invalidEntry = false;
+			Adventure();
+			break;
+		case 's':
+		case 'S':
+			invalidEntry = false;
+			break;
+		case 'e':
+		case 'E':
+			invalidEntry = false;
+			break;
+		default:
+			invalidEntry = true;
+			break;
 		}
-		else break;
-	} while (true);
-
-	return select;
+	}
 }
