@@ -1,5 +1,5 @@
 #pragma once
-#include "GameState.h"
+//#include "GameState.h"
 #include <iostream>
 #include <random>
 #include <string>
@@ -16,8 +16,8 @@ std::ofstream myFile;
 #pragma region Declarations
 std::string displayWeapon();
 bool checkExp();
-void battle();
-void displayStats();
+int battle();
+void displayStats(int HP, int maxHP);
 void levelUp();
 int getNumValid();
 int RNG();
@@ -31,26 +31,26 @@ STATE mainMenu();
 #pragma endregion Function declarations
 
 #pragma region Stats
-static class playerStats
+
+struct playerStats
 {
-	public:
-		std::string pName;
+	std::string pName;
 
-		int hp = 100;
-		int minHp = 0;
-		int maxHp = 100;
+	int hp = 100;
+	int minHp = 0;
+	int maxHp = 100;
 
-		int level = 1;
+	int level = 1;
 
-		int currentExp = 0;
-		int maxExp = level * 100;
+	int currentExp = 0;
+	int maxExp = level * 100;
 
-		int def = 1;
-		int atk = 1;
-		int damage = atk + pWeapon; 
-		int nPotions = 5;
+	int def = 1;
+	int atk = 1;
+	int damage = atk + pWeapon;
+	int nPotions = 5;
 
-		WEAPON pWeapon = STICK;
+	WEAPON pWeapon = STICK;
 };
 
 class mStats
@@ -146,7 +146,7 @@ int RNG(int min, int max)
 	return dice_roll;
 }
 
-void battle()
+int battle()
 {
 	playerStats pStats;
 	mStats mstats;
@@ -162,7 +162,7 @@ void battle()
 		std::cout << "You are attacked by a bandit!" << std::endl;
 		while (inCombat)
 		{
-			displayStats();
+			displayStats(pStats.hp, pStats. maxHp);
 			std::cout << "What will you do?\n\t[F]ight\n\t[R]un\n\t[H]eal" << std::endl;
 			std::cin >> cInput;
 			switch (cInput)
@@ -171,7 +171,10 @@ void battle()
 			case 'f':
 				pStats.hp = pStats.hp - mstats.atk;
 				mstats.hp = mstats.hp - pStats.hp;
-				displayStats();
+				//return pStats.hp;
+				//return mstats.hp;
+				//std::cout << pStats.hp << std::endl;
+				displayStats(pStats.hp, pStats.maxHp);
 				break;
 			case 'R':
 			case 'r':
@@ -183,6 +186,7 @@ void battle()
 				{
 					pStats.hp += 25;
 					pStats.nPotions -= 1;
+					return pStats.nPotions;
 				}
 				break;
 			default:
@@ -230,11 +234,11 @@ int getNumValid(int min, int max)
 #pragma endregion Functions that return number values
 
 #pragma region Display Functions
-void displayStats()
+void displayStats(int HP,int maxHP)
 {
 	playerStats pStats;
 	std::cout << "+-----------------------+"                            << std::endl;
-	std::cout << "|\tHP: " << pStats.hp << "/" << pStats.maxHp << "\t|" << std::endl;
+	std::cout << "|\tHP: " << HP << "/" << maxHP << "\t|" << std::endl;
 	std::cout << "|\tATK: " << pStats.atk << "\t\t|"                    << std::endl;
 	std::cout << "|\tWeapon: " << displayWeapon() << "\t|"              << std::endl;
 	std::cout << "+-----------------------+"                            << std::endl;
