@@ -2,7 +2,6 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
-
 #include "GameState.h"
 
 STATE mainMenu();
@@ -34,6 +33,7 @@ int main()
 			break;
 		}
 	}
+
 	system("pause");
 	return 0;
 }

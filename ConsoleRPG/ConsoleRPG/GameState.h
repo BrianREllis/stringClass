@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include <fstream>
 
 enum STATE {INIT, MAIN, PLAY, GAME, EXIT};
 enum WEAPON { FISTS, STICK, DAGGER, SHORTSWORD, GREATAXE };
@@ -10,6 +11,7 @@ enum WEAPON { FISTS, STICK, DAGGER, SHORTSWORD, GREATAXE };
 STATE currentLevel = INIT;
 
 bool firstLaunch = true;
+std::ofstream myFile;
 
 #pragma region Declarations
 std::string displayWeapon();
@@ -29,7 +31,7 @@ STATE mainMenu();
 #pragma endregion Function declarations
 
 #pragma region Stats
-class playerStats
+static class playerStats
 {
 	public:
 		std::string pName;
@@ -45,7 +47,9 @@ class playerStats
 
 		int def = 1;
 		int atk = 1;
-		
+		int damage = atk + pWeapon; 
+		int nPotions = 5;
+
 		WEAPON pWeapon = STICK;
 };
 
@@ -84,6 +88,10 @@ void levelUp()
 	pStats.level++;
 	pStats.currentExp = 0;
 	pStats.maxExp = pStats.level * 100;
+
+	myFile.open("playerLog.txt");
+	myFile << "Player leveled up and reached level " << pStats.level << "\n";
+	myFile.close();
 
 	std::cout << "Health = " << pStats.hp << std::endl;
 	std::cout << "Attack = " << pStats.atk << std::endl;
@@ -147,31 +155,55 @@ void battle()
 
 	bool monsterAlive = true;
 	bool playerAlive = true;
+	bool inCombat = true;
 
 	while (monsterAlive == true && playerAlive == true)
 	{
 		std::cout << "You are attacked by a bandit!" << std::endl;
-		displayStats();
-		std::cout << "What will you do?\n\t[F]ight\n\t[R]un\n\t[H]eal" << std::endl;
-		std::cin >> cInput;
-		switch (cInput)
+		while (inCombat)
 		{
-		case 'F':
-		case 'f':
-			pStats.hp -= mstats.atk;
 			displayStats();
-			break;
-		case 'R':
-		case 'r':
-			monsterAlive = false;
-			break;
-		case 'H':
-		case 'h':
-			break;
-		default:
-			break;
+			std::cout << "What will you do?\n\t[F]ight\n\t[R]un\n\t[H]eal" << std::endl;
+			std::cin >> cInput;
+			switch (cInput)
+			{
+			case 'F':
+			case 'f':
+				pStats.hp = pStats.hp - mstats.atk;
+				mstats.hp = mstats.hp - pStats.hp;
+				displayStats();
+				break;
+			case 'R':
+			case 'r':
+				monsterAlive = false;
+				break;
+			case 'H':
+			case 'h':
+				if (pStats.nPotions > 0)
+				{
+					pStats.hp += 25;
+					pStats.nPotions -= 1;
+				}
+				break;
+			default:
+				break;
+			}
+			if (mstats.hp <= 0)
+			{
+				pStats.currentExp += mstats.exp;
+				mstats.hp = mstats.maxhp;
+				monsterAlive = false;
+				inCombat = false;
+			}
+			if (pStats.hp <= 0)
+			{
+				playerAlive = false;
+				inCombat = false;
+				std::cout << "You have fallen in battle!" << std::endl;
+				system("pause");
+				play();
+			}
 		}
-
 	}
 }
 
@@ -255,6 +287,7 @@ void play()
 	char cInput;
 	bool invalidEntry = true;
 	playerStats pStats;
+	std::ofstream myFile;
 
 	system("cls");
 	if (firstLaunch)
@@ -263,6 +296,11 @@ void play()
 		std::cin >> pStats.pName;
 		std::cout << "So your name is " << pStats.pName << "? Interesting... But enough of that,"
 			<< std::endl << "what would you like to do?\n\n" << std::endl;
+
+		myFile.open("playerLog.txt");
+		myFile << "Player " << pStats.pName << " started his quest!\n";
+		myFile.close();
+
 		firstLaunch = false;
 	}
 	else
@@ -292,6 +330,10 @@ void play()
 		case 'E':
 			invalidEntry = false;
 			mainMenu();
+			break;
+		case '-':
+		case '_':
+			levelUp();
 			break;
 		default:
 			invalidEntry = true;
@@ -352,19 +394,13 @@ void Adventure()
 			case 'L':
 				system("cls");
 				std::cout << "You turn left and plunge deeper into the forest" << std::endl;
-				if (tempInt >= 7)
-				{
-					battle();
-				}
+				battle();
 				break;
 			case 'r':
 			case 'R':
 				system("cls");
 				std::cout << "You turn to your right and continue to trudge deeper, unafraid" << std::endl;
-				if (tempInt >= 7)
-				{
-					battle();
-				}
+				battle();
 				break;
 			case 't':
 			case 'T':
