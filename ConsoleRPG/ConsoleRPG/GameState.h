@@ -14,6 +14,7 @@ bool firstLaunch = true;
 #pragma region Declarations
 std::string displayWeapon();
 bool checkExp();
+void battle();
 void displayStats();
 void levelUp();
 int getNumValid();
@@ -129,11 +130,49 @@ void levelUp()
 #pragma region Numerical Functions
 int RNG(int min, int max)
 {
+	//Next three lines from http://www.cplusplus.com/reference/random/
 	std::default_random_engine generator;
 	std::uniform_int_distribution<int> distribution(min, max);
 	int dice_roll = distribution(generator);
 
 	return dice_roll;
+}
+
+void battle()
+{
+	playerStats pStats;
+	mStats mstats;
+
+	char cInput;
+
+	bool monsterAlive = true;
+	bool playerAlive = true;
+
+	while (monsterAlive == true && playerAlive == true)
+	{
+		std::cout << "You are attacked by a bandit!" << std::endl;
+		displayStats();
+		std::cout << "What will you do?\n\t[F]ight\n\t[R]un\n\t[H]eal" << std::endl;
+		std::cin >> cInput;
+		switch (cInput)
+		{
+		case 'F':
+		case 'f':
+			pStats.hp -= mstats.atk;
+			displayStats();
+			break;
+		case 'R':
+		case 'r':
+			monsterAlive = false;
+			break;
+		case 'H':
+		case 'h':
+			break;
+		default:
+			break;
+		}
+
+	}
 }
 
 int getNumValid(int min, int max)
@@ -296,7 +335,7 @@ void Adventure()
 	playerStats pStats;
 	mStats mstats;
 
-	int RNG = std::rand();
+	int tempInt = 0;
 	bool isExploring = true;
 	char cInput;
 
@@ -304,6 +343,7 @@ void Adventure()
 	std::cout << "You take the trail out of town and into the forest..." << std::endl;
 	while (isExploring)
 	{
+		tempInt = RNG(1, 10);
 		std::cout << "You come to a split in the path, do you go [R]ight, [L]eft, or [T]urn back?" << std::endl;
 		std::cin >> cInput;
 		switch (cInput)
@@ -312,16 +352,28 @@ void Adventure()
 			case 'L':
 				system("cls");
 				std::cout << "You turn left and plunge deeper into the forest" << std::endl;
+				if (tempInt >= 7)
+				{
+					battle();
+				}
 				break;
 			case 'r':
 			case 'R':
 				system("cls");
 				std::cout << "You turn to your right and continue to trudge deeper, unafraid" << std::endl;
+				if (tempInt >= 7)
+				{
+					battle();
+				}
 				break;
 			case 't':
 			case 'T':
-				//system("cls");
+				system("cls");
 				isExploring = false;
+				break;
+			case 'i':
+			case 'I':
+				std::cout << tempInt;
 				break;
 			default:
 				break;

@@ -37,28 +37,3 @@ int main()
 	system("pause");
 	return 0;
 }
-
-//PUT BACK IN FOR COMBAT!
-
-
-//std::cout << "You are attacked by a bandit!" << std::endl;
-//displayStats();
-//std::cout << "What will you do?\n\t[F]ight\n\t[R]eturn to town\n\t[H]eal" << std::endl;
-//std::cin >> cInput;
-//switch (cInput)
-//{
-//case 'F':
-//case 'f':
-//	pStats.hp -= mstats.atk;
-//	displayStats();
-//	break;
-//case 'R':
-//case 'r':
-//	isExploring = false;
-//	break;
-//case 'H':
-//case 'h':
-//	break;
-//default:
-//	break;
-//}
